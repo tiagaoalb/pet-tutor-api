@@ -1,0 +1,49 @@
+package com.peti9engineeringlab.services;
+
+import com.peti9engineeringlab.dto.TutorDTO;
+import com.peti9engineeringlab.model.Tutor;
+import com.peti9engineeringlab.repositories.TutorRepository;
+import com.peti9engineeringlab.services.exceptions.TutorAlreadyExistsException;
+import com.peti9engineeringlab.services.exceptions.TutorNameNotFoundException;
+import com.peti9engineeringlab.services.exceptions.TutorNotFoundException;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+
+@Service
+@RequiredArgsConstructor
+public class TutorService {
+
+    private final TutorRepository tutorRepository;
+
+    @Transactional
+    public TutorDTO createTutor(TutorDTO tutorDTO) {
+        var tutorName = tutorDTO.name();
+        if (tutorRepository.existsByName(tutorName)) {
+            throw new TutorAlreadyExistsException(tutorName);
+        }
+        var newTutor = new Tutor(tutorDTO);
+        var savedTutor = tutorRepository.save(newTutor);
+        return savedTutor.toTutorDTO();
+    }
+
+    public List<TutorDTO> findAll() {
+        var tutors = tutorRepository.findAll();
+        return tutors.stream().map(Tutor::toTutorDTO).toList();
+    }
+
+    public TutorDTO findById(Long id) {
+        var tutor = tutorRepository.findById(id).orElseThrow(() -> new TutorNotFoundException(id));
+        return tutor.toTutorDTO();
+    }
+
+    public List<TutorDTO> findTutorByName(String name) {
+        var tutors = tutorRepository.findByNameContainingIgnoreCase(name);
+        if (tutors.isEmpty()) {
+            throw new TutorNameNotFoundException(name);
+        }
+        return tutors.stream().map(Tutor::toTutorDTO).toList();
+    }
+}

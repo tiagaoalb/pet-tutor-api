@@ -5,8 +5,7 @@ import com.peti9engineeringlab.dto.TutorDTO;
 import com.peti9engineeringlab.model.Tutor;
 import com.peti9engineeringlab.repositories.FakeTutorRepository;
 import com.peti9engineeringlab.repositories.TutorRepository;
-import com.peti9engineeringlab.services.exceptions.TutorNameNotFoundException;
-import com.peti9engineeringlab.services.exceptions.TutorNotFoundException;
+import com.peti9engineeringlab.services.exceptions.DataInfoException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -87,10 +86,10 @@ class TutorServiceTests {
 
         when(tutorRepository.findById(tutorId)).thenReturn(Optional.empty());
 
-        TutorNotFoundException exception = assertThrows(TutorNotFoundException.class,
+        var exception = assertThrows(DataInfoException.class,
                 () -> tutorService.findById(tutorId));
 
-        assertEquals("404 NOT_FOUND \"Tutor not found with id 1\"", exception.getMessage());
+        assertEquals("404 NOT_FOUND \"Tutor with id 1 was not found\"", exception.getMessage());
     }
 
     @Test
@@ -123,9 +122,9 @@ class TutorServiceTests {
 
         var tutorService = new TutorService(tutorRepository);
 
-        var exception = assertThrows(TutorNameNotFoundException.class,
+        var exception = assertThrows(DataInfoException.class,
                 () -> tutorService.findTutorByName(name));
 
-        assertEquals("404 NOT_FOUND \"Tutor with name Bill was not found!\"", exception.getMessage());
+        assertEquals("404 NOT_FOUND \"Tutor with name Bill was not found\"", exception.getMessage());
     }
 }

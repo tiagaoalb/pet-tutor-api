@@ -10,6 +10,5 @@ import java.util.List;
 public interface TutorRepository extends JpaRepository<Tutor, Long> {
 
     List<Tutor> findByNameContainingIgnoreCase(String name);
-
     boolean existsByName(String name);
 }

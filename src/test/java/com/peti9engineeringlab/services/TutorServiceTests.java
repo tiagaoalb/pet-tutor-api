@@ -38,7 +38,7 @@ class TutorServiceTests {
     @Test
     @DisplayName("Should find all tutors")
     void findAllTutors_ShouldReturnAllTutors() {
-        List<Tutor> tutors = new ArrayList<Tutor>();
+        var tutors = new ArrayList<Tutor>();
         var tutorOne = new Tutor(new TutorDTO(1L, "Paul", "Johnny", LocalDate.now(), Collections.singletonList(new PetDTO(
                 1L, "Buddy", "Labrador", LocalDate.now(), "Brown", 25.5, LocalDate.now(), "Rabies", "Paul"
         ))));
@@ -52,7 +52,7 @@ class TutorServiceTests {
 
         when(tutorRepository.findAll()).thenReturn(tutors);
 
-        List<Tutor> tutorList = tutorRepository.findAll();
+        var tutorList = tutorRepository.findAll();
 
         assertEquals(2, tutorList.size());
         verify(tutorRepository, times(1)).findAll();
@@ -69,7 +69,7 @@ class TutorServiceTests {
 
         when(tutorRepository.findById(tutorDTO.id())).thenReturn(Optional.of(new Tutor(tutorDTO)));
 
-        Optional<Tutor> foundTutor = tutorRepository.findById(tutorDTO.id());
+        var foundTutor = tutorRepository.findById(tutorDTO.id());
 
         assertTrue(foundTutor.isPresent());
         assertEquals(tutorDTO.id(), foundTutor.get().getId());
@@ -79,7 +79,7 @@ class TutorServiceTests {
     @Test
     @DisplayName("Throws 404 NOT_FOUND when a tutor id is not found")
     void findTutorById_WhenTutorDoesNotExist_ShouldThrowTutorNotFoundException() {
-        Long tutorId = 1L;
+        var tutorId = 1L;
         var tutorRepository = mock(TutorRepository.class);
         var tutorService = new TutorService(tutorRepository);
 

@@ -5,6 +5,7 @@ import com.peti9engineeringlab.dto.PetDTO;
 import com.peti9engineeringlab.dto.TutorDTO;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.NaturalId;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -12,7 +13,7 @@ import java.util.List;
 import java.util.Objects;
 
 @Entity
-@Table(name = "tb_tutors")
+@Table(name = "tutors")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -21,12 +22,12 @@ public class Tutor {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(unique = true)
-    @EqualsAndHashCode.Include
+    @NaturalId
     private String name;
     private String nickName;
     @JsonFormat(pattern = "dd-MM-yyyy")
     private LocalDate birthDate;
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "tutor", cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "tutor", cascade = CascadeType.ALL)
     private List<Pet> pets = new ArrayList<>();
     public Tutor(TutorDTO dto) {
         this.id = dto.id();

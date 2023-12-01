@@ -3,7 +3,7 @@ package com.peti9engineeringlab.services;
 import com.peti9engineeringlab.dto.PetDTO;
 import com.peti9engineeringlab.model.Pet;
 import com.peti9engineeringlab.repositories.PetRepository;
-import com.peti9engineeringlab.services.exceptions.DataInfoException;
+import com.peti9engineeringlab.services.exceptions.DataNotFoundException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -19,7 +19,7 @@ class PetServiceTests {
 
     @Test
     @DisplayName("Pet should be created")
-    void should_create_pet() {
+    void createPet_ShouldSavePet() {
         var pet = new Pet(new PetDTO(1L, "Buddy", "Labrador", LocalDate.parse("2020-10-01"), "Brown", 25.5, LocalDate.parse("2020-10-01"), "Rabies", "Paul"));
         var petRepository = mock(PetRepository.class);
 
@@ -52,7 +52,7 @@ class PetServiceTests {
 
     @Test
     @DisplayName("Should find a pet by its id")
-    void findPetById_ShouldReturnPet() {
+    void findPetById_ShouldReturnPetById() {
         var petDTO = new PetDTO(1L, "Buddy", "Labrador", LocalDate.parse("2020-10-01"), "Brown", 25.5, LocalDate.parse("2020-10-01"), "Rabies", "Paul");
 
         var petRepository = mock(PetRepository.class);
@@ -76,7 +76,7 @@ class PetServiceTests {
 
         var petService = new PetService(petRepository);
 
-        var exception = assertThrows(DataInfoException.class,
+        var exception = assertThrows(DataNotFoundException.class,
                 () -> petService.findPetById(petId));
 
         assertEquals("404 NOT_FOUND \"Pet with id 1 does not exist.\"", exception.getMessage());
@@ -118,7 +118,7 @@ class PetServiceTests {
 
         var petService = new PetService(petRepository);
 
-        var exception = assertThrows(DataInfoException.class,
+        var exception = assertThrows(DataNotFoundException.class,
                 () -> petService.findPetByNameContaining(name));
 
         assertEquals("404 NOT_FOUND \"Pet with name Sven was not found!\"", exception.getMessage());
@@ -126,7 +126,7 @@ class PetServiceTests {
 
     @Test
     @DisplayName("Should update pet name by its id")
-    void updatePetNameById_WhenPetExists_ShouldUpdatePet() {
+    void updatePetNameById_WhenPetExists_ShouldUpdatePetBy() {
         var petId = 1L;
         var newPetName = "Rex";
         var petRepository = mock(PetRepository.class);
@@ -158,7 +158,7 @@ class PetServiceTests {
 
         var petService = new PetService(petRepository);
 
-        var exception = assertThrows(DataInfoException.class,
+        var exception = assertThrows(DataNotFoundException.class,
                 () -> petService.updatePetNameById(petId, newPetName));
 
         assertEquals("404 NOT_FOUND \"Pet with id 1 does not exist.\"", exception.getMessage());
@@ -193,7 +193,7 @@ class PetServiceTests {
 
         var petService = new PetService(petRepository);
 
-        var exception = assertThrows(DataInfoException.class,
+        var exception = assertThrows(DataNotFoundException.class,
                 () -> petService.deletePetById(petId));
 
         assertEquals("404 NOT_FOUND \"Pet with id 1 does not exist.\"", exception.getMessage());

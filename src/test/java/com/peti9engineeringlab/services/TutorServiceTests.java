@@ -4,7 +4,7 @@ import com.peti9engineeringlab.dto.PetDTO;
 import com.peti9engineeringlab.dto.TutorDTO;
 import com.peti9engineeringlab.model.Tutor;
 import com.peti9engineeringlab.repositories.TutorRepository;
-import com.peti9engineeringlab.services.exceptions.DataInfoException;
+import com.peti9engineeringlab.services.exceptions.DataNotFoundException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -21,7 +21,7 @@ class TutorServiceTests {
 
     @Test
     @DisplayName("Tutor should be created")
-    void should_save_tutor() {
+    void createTutor_ShouldSaveTutor() {
         var tutor = new Tutor(new TutorDTO(1L, "Paul", "Johnny", LocalDate.now(), Collections.singletonList(new PetDTO(
                 1L, "Buddy", "Labrador", LocalDate.now(), "Brown", 25.5, LocalDate.now(), "Rabies", "Paul"
         ))));
@@ -37,7 +37,7 @@ class TutorServiceTests {
 
     @Test
     @DisplayName("Should find all tutors")
-    void findAllTutors() {
+    void findAllTutors_ShouldReturnAllTutors() {
         List<Tutor> tutors = new ArrayList<Tutor>();
         var tutorOne = new Tutor(new TutorDTO(1L, "Paul", "Johnny", LocalDate.now(), Collections.singletonList(new PetDTO(
                 1L, "Buddy", "Labrador", LocalDate.now(), "Brown", 25.5, LocalDate.now(), "Rabies", "Paul"
@@ -60,7 +60,7 @@ class TutorServiceTests {
 
     @Test
     @DisplayName("Should find a tutor by its id")
-    void findTutorById_ShouldReturnTutor() {
+    void findTutorById_ShouldReturnTutorById() {
         var tutorDTO = new TutorDTO(1L, "Paul", "Johnny", LocalDate.now(), Collections.singletonList(new PetDTO(
                 1L, "Buddy", "Labrador", LocalDate.now(), "Brown", 25.5, LocalDate.now(), "Rabies", "Paul"
         )));
@@ -85,7 +85,7 @@ class TutorServiceTests {
 
         when(tutorRepository.findById(tutorId)).thenReturn(Optional.empty());
 
-        var exception = assertThrows(DataInfoException.class,
+        var exception = assertThrows(DataNotFoundException.class,
                 () -> tutorService.findById(tutorId));
 
         assertEquals("404 NOT_FOUND \"Tutor with id 1 was not found\"", exception.getMessage());
@@ -131,7 +131,7 @@ class TutorServiceTests {
 
         var tutorService = new TutorService(tutorRepository);
 
-        var exception = assertThrows(DataInfoException.class,
+        var exception = assertThrows(DataNotFoundException.class,
                 () -> tutorService.findTutorByName(name));
 
         assertEquals("404 NOT_FOUND \"Tutor with name Bill was not found\"", exception.getMessage());

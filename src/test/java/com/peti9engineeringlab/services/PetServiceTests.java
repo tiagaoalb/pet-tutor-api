@@ -2,7 +2,6 @@ package com.peti9engineeringlab.services;
 
 import com.peti9engineeringlab.dto.PetDTO;
 import com.peti9engineeringlab.model.Pet;
-import com.peti9engineeringlab.repositories.FakePetRepository;
 import com.peti9engineeringlab.repositories.PetRepository;
 import com.peti9engineeringlab.services.exceptions.DataInfoException;
 import org.junit.jupiter.api.DisplayName;
@@ -87,16 +86,26 @@ class PetServiceTests {
     @DisplayName("Should find a pet by any part of its name")
     void findPetByNameContaining_ShouldReturnPet() {
         var name = "bud";
-        var petRepository = new FakePetRepository();
+        var petRepository = mock(PetRepository.class);
 
-        petRepository.addPet(new Pet(new PetDTO(1L, "Buddy", "Labrador", LocalDate.now(), "Brown", 25.5, LocalDate.now(), "Rabies", "Paul")));
-        petRepository.addPet(new Pet(new PetDTO(1L, "Budweiser", "Golden Retriever", LocalDate.now(), "Golden", 30.0, LocalDate.now(), "Distemper", "Mary")));
+        var pets = new ArrayList<Pet>();
+        var pet1 = (new Pet(new PetDTO(1L, "Buddy", "Labrador", LocalDate.now(), "Brown", 25.5, LocalDate.now(), "Rabies", "Paul")));
+        var pet2 = (new Pet(new PetDTO(2L, "Budweiser", "Golden Retriever", LocalDate.now(), "Golden", 30.0, LocalDate.now(), "Distemper", "Mary")));
+
+        pets.add(pet1);
+        pets.add(pet2);
+
+        when(petRepository.findByNameContainingIgnoreCase(name)).thenReturn(
+                pets.stream().filter(pet -> pet.getName().toLowerCase().contains(name.toLowerCase())).toList()
+        );
 
         var petService = new PetService(petRepository);
 
         var result = petService.findPetByNameContaining(name);
 
         assertEquals(2, result.size());
+        assertTrue(result.stream().anyMatch(pet -> pet.name().equalsIgnoreCase("Buddy")));
+        assertTrue(result.stream().anyMatch(pet -> pet.name().equalsIgnoreCase("Budweiser")));
     }
 
     @Test

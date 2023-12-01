@@ -3,7 +3,6 @@ package com.peti9engineeringlab.services;
 import com.peti9engineeringlab.dto.PetDTO;
 import com.peti9engineeringlab.dto.TutorDTO;
 import com.peti9engineeringlab.model.Tutor;
-import com.peti9engineeringlab.repositories.FakeTutorRepository;
 import com.peti9engineeringlab.repositories.TutorRepository;
 import com.peti9engineeringlab.services.exceptions.DataInfoException;
 import org.junit.jupiter.api.DisplayName;
@@ -96,20 +95,30 @@ class TutorServiceTests {
     @DisplayName("Should find a tutor by any part of its name")
     void findTutorByNameContaining_ShouldReturnTutor() {
         var name = "pa";
-        var tutorRepository = new FakeTutorRepository();
+        var tutorRepository = mock(TutorRepository.class);
 
-        tutorRepository.addTutor(new Tutor(new TutorDTO(1L, "Paul", "Johnny", LocalDate.now(), Collections.singletonList(new PetDTO(
+        var tutors = new ArrayList<Tutor>();
+        var tutor1 = (new Tutor(new TutorDTO(1L, "Paul", "Johnny", LocalDate.now(), Collections.singletonList(new PetDTO(
                 1L, "Buddy", "Labrador", LocalDate.now(), "Brown", 25.5, LocalDate.now(), "Rabies", "Paul"
         )))));
-        tutorRepository.addTutor(new Tutor(new TutorDTO(1L, "Patricia", "Marie", LocalDate.now(), Collections.singletonList(new PetDTO(
+        var tutor2 = (new Tutor(new TutorDTO(1L, "Patricia", "Marie", LocalDate.now(), Collections.singletonList(new PetDTO(
                 1L, "Axe", "Cutter", LocalDate.now(), "Yellow", 10.5, LocalDate.now(), "Rabies", "Mary"
         )))));
+
+        tutors.add(tutor1);
+        tutors.add(tutor2);
+
+        when(tutorRepository.findByNameContainingIgnoreCase(name)).thenReturn(
+                tutors.stream().filter(t -> t.getName().toLowerCase().contains(name.toLowerCase())).toList()
+        );
 
         var tutorService = new TutorService(tutorRepository);
 
         var result = tutorService.findTutorByName(name);
 
         assertEquals(2, result.size());
+        assertTrue(result.stream().anyMatch(tutor -> tutor.name().equalsIgnoreCase("Paul")));
+        assertTrue(result.stream().anyMatch(tutor -> tutor.name().equalsIgnoreCase("Patricia")));
     }
 
     @Test
